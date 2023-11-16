@@ -1,4 +1,5 @@
 ﻿using Database.Models;
+using LanguageExt.Common;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,7 @@ namespace WeeklyReview.Handlers
         }
     }
 
-    internal class GetWeatherForecastsHandler : IRequestHandler<GetWeatherForecastsQuery, IEnumerable<WeatherForecast>>
+    internal class GetWeatherForecastsHandler : IRequestHandler<GetWeatherForecastsQuery, Result<IEnumerable<WeatherForecast>>>
     {
         private readonly IMediator _mediator;
 
@@ -38,8 +39,14 @@ namespace WeeklyReview.Handlers
             _mediator = mediator;
         }
 
-        public async Task<IEnumerable<WeatherForecast>> Handle(GetWeatherForecastsQuery request, CancellationToken cancellationToken)
+        public async Task<Result<IEnumerable<WeatherForecast>>> Handle(GetWeatherForecastsQuery request, CancellationToken cancellationToken)
         {
+            if(request.Days < 0)
+            {
+                var error = new ArgumentException($"Value cannot be less that zero", nameof(request.Days));
+                return new Result<IEnumerable<WeatherForecast>>(error);
+            }
+
             var forecasts = new List<WeatherForecast>();
             var date = DateTime.Now;
             for (int i = 0; i < request.Days; i++)

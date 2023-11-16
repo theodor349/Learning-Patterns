@@ -16,10 +16,20 @@ namespace API.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet(Name = "GetWeatherForecast")]
-        public async Task<IEnumerable<WeatherForecast>> Get()
+        [HttpGet("GetWeatherForecast/{days}")]
+        public async Task<IActionResult> GetWeek(int days)
         {
-            return await _mediator.Send(new GetWeatherForecastsQuery(7));
+            var res = await _mediator.Send(new GetWeatherForecastsQuery(days));
+            return res.Match<IActionResult>(
+                x => Ok(x), 
+                e => BadRequest(e.Message));
+        }
+
+        [HttpGet("GetWeatherForecastForToday")]
+        public async Task<IActionResult> GetToday()
+        {
+            var res = await _mediator.Send(new GetWeatherForecastQuery(DateTime.Now));
+            return Ok(res);
         }
     }
 }

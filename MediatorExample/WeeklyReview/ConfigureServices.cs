@@ -11,7 +11,10 @@ namespace WeeklyReview
     {
         public static void AddWeeklyReview(this IServiceCollection services) 
         {
-            services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<MediatrEntry>());
+            services.AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssemblyContaining<MediatrEntry>();
+            });
         }
     }
 }
